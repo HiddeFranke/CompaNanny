@@ -5,7 +5,6 @@ from datetime import datetime
 import json
 import os
 import re
-import creds
 import ast
 from text_preprocessing import *
 from Model import *
@@ -23,7 +22,7 @@ if not st.session_state.logged_in:
     password = st.text_input("Wachtwoord", type="password")
     
     if st.button("Inloggen"):
-        if username == creds.Compananny_username and password == creds.Compananny_password:
+        if username == st.secrets["Compananny_username"] and password == st.secrets["Compananny_password"]:
             st.session_state.logged_in = True  # Zet de loginstatus op True
             st.success("Succesvol ingelogd!")
             st.rerun()
