@@ -1,7 +1,6 @@
-import creds
 import openai
 
-openai.api_key = creds.gpt_api_key
+openai.api_key = st.secrets["gpt_api_key"]
 def chat_with_gpt(user_input, inspection_date):
     standard_info = f"Analyseer pdf kinderopvanginspectierapport rond {inspection_date}; geef per label overtreding (1/0) voor: 'Algemene voorwaarden kwaliteit en naleving', 'Kwaliteit en naleving', 'Veiligheid en gezondheid', 'Personeel en groepen', 'Pedagogisch klimaat', 'Accommodatie', 'Ouderrecht'. Geef alleen dictionarywaarden en exacte keys zonder pythoncodeblok:\n\n"
     prompt = standard_info + user_input
