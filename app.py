@@ -110,56 +110,26 @@ else:
 
 
         
-        # def find_or_input_inspection_date(pdf_text):                     
-        #     # Zoek naar "Datum inspectie" en haal de datum op
-        #     match = re.search(r"Datum inspectie[:\s]+(\d{2}-\d{2}-\d{4})", pdf_text)
-        #     if match:
-        #         date_str = match.group(1)
-        #         inspection_date = datetime.strptime(date_str, "%d-%m-%Y").date()
-        #         # st.write(f"Datum inspectierapport gevonden (YYYY-MM-DD): {inspection_date}")
-        #         st.write(f"Datum inspectierapport gevonden (YYYY-MM-DD): <span style='color: green; font-weight: bold;'>{inspection_date}</span>", unsafe_allow_html=True)
-        #     else:
-        #         st.warning("Geen datum gevonden. Voer handmatig een inspectie datum in.")
-        #         st.text_area("Hier is een hint: \n", pdf_text, height=100)
-        #         # Toon de date input voor handmatige invoer
-        #         manual_date = st.date_input("Selecteer een datum", value=None)
-        #         if manual_date:
-        #             inspection_date = datetime.combine(manual_date, datetime.min.time()).date()
-        #             # st.success(f"Handmatig ingevoerde datum (YYYY-MM-DD): {inspection_date}")
-        #             st.write(f"Handmatig ingevoerde datum (YYYY-MM-DD): <span style='color: green; font-weight: bold;'>{inspection_date}</span>", unsafe_allow_html=True)
-        #         else:
-        #             inspection_date = None
-        #     return inspection_date
-
-        def find_or_input_inspection_date(pdf_text):
-            # Initialiseer een inspectiedatum in session_state als deze nog niet bestaat
-            if 'inspection_date' not in st.session_state:
-                st.session_state['inspection_date'] = None
-
+        def find_or_input_inspection_date(pdf_text):                     
             # Zoek naar "Datum inspectie" en haal de datum op
-            match = re.search(r"Datum inspectie\s*:\s*(\d{2})\s*-\s*(\d{2})\s*-\s*(\d{4})", pdf_text)
+            match = re.search(r"Datum inspectie[:\s]+(\d{2}-\d{2}-\d{4})", pdf_text)
             if match:
-                day, month, year = match.groups()
-                date_str = f"{day}-{month}-{year}"
+                date_str = match.group(1)
                 inspection_date = datetime.strptime(date_str, "%d-%m-%Y").date()
-                st.session_state['inspection_date'] = inspection_date
-            elif st.session_state['inspection_date'] is None:
-                # Toon waarschuwing en hint als er nog geen datum is ingevuld
-                st.warning("Geen datum gevonden. Voer handmatig een inspectiedatum in.")
+                # st.write(f"Datum inspectierapport gevonden (YYYY-MM-DD): {inspection_date}")
+                st.write(f"Datum inspectierapport gevonden (YYYY-MM-DD): <span style='color: green; font-weight: bold;'>{inspection_date}</span>", unsafe_allow_html=True)
+            else:
+                st.warning("Geen datum gevonden. Voer handmatig een inspectie datum in.")
                 st.text_area("Hier is een hint: \n", pdf_text, height=100)
-
-                # Date input om handmatig een datum in te voeren
-                manual_date = st.date_input("Selecteer een datum", key="manual_date", value=None)
+                # Toon de date input voor handmatige invoer
+                manual_date = st.date_input("Selecteer een datum", value=None)
                 if manual_date:
                     inspection_date = datetime.combine(manual_date, datetime.min.time()).date()
-                    st.session_state['inspection_date'] = inspection_date
-                    st.rerun()  # Herlaad de app zodra de datum is ingevuld
-            
-            st.write(f"Inspectierapport datum (YYYY-MM-DD): <span style='color: green; font-weight: bold;'>{st.session_state['inspection_date']}</span>", unsafe_allow_html=True)
-            return st.session_state['inspection_date']
-
-
-
+                    # st.success(f"Handmatig ingevoerde datum (YYYY-MM-DD): {inspection_date}")
+                    st.write(f"Handmatig ingevoerde datum (YYYY-MM-DD): <span style='color: green; font-weight: bold;'>{inspection_date}</span>", unsafe_allow_html=True)
+                else:
+                    inspection_date = None
+            return inspection_date
 
         # Data inladen bij opstart
         # Laad de bestaande gegevens als ze al bestaan
@@ -176,20 +146,16 @@ else:
 
     #=======================================================================================
         # Creëer meerdere tabbladen
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Inspectierapport Analyser", "Overzicht Database", "Developer", "Model", "Training Data Annotator"])
+        tab1, tab2, tab3 = st.tabs(["Inspectierapport Analyser", "Overzicht Database", "Developer"])
 
         # Tabblad 1: Inspectierapport Analyser
         with tab1:
             st.header("Inspectierapport Analyser")
             
-
-
             # Upload PDF voor analyse
             uploaded_file = st.file_uploader("Upload een PDF van het inspectierapport", type="pdf")
             
             if uploaded_file:
-                st.session_state['bedrijf'], st.session_state['vestiging'], st.session_state['inspection_date'] = None, None, None
-
                 # Lees de voorpagina van de PDF
                 reader = PdfReader(uploaded_file)
                 front_page = "".join(reader.pages[0].extract_text())
@@ -291,108 +257,28 @@ else:
 
             # Tabblad 3: Bedrijf Toevoegen (met eenvoudige wachtwoordbeveiliging)
         with tab3:
-            # Input voor nieuw bedrijf en vestiging (alleen zichtbaar als gebruiker is ingelogd)
-            new_bedrijf = st.text_input("Bedrijfsnaam")
-            new_vestiging = st.text_input("Vestiging")
-            
-            # Toevoeg Button
-            if st.button("Toevoegen"):
-                voeg_vestiging_toe(new_bedrijf, new_vestiging, path="bedrijven_data.json")
-                st.write(f"Bedrijf '{new_bedrijf}' met vestiging '{new_vestiging}' toegevoegd aan de database.")
-
-
-        with tab4:
-            standard_prompt = "Analyseer pdf kinderopvanginspectierapport; geef per label overtreding (1/0) voor: 'Kwaliteit en naleving', 'Veiligheid en gezondheid', 'Personeel en groepen', 'Pedagogisch klimaat', 'Accommodatie', 'Ouderrecht'. Geef alleen dictionary zonder pythoncodeblok"
-            user_input = st.text_area("Ask ChatGPT")   
-            if st.button("Vraag"):     
-                response = chat_with_gpt(standard_prompt + user_input)
-                st.write("Response from ChatGPT:", response)
-            
-            # Bestaande dictionary met basisinformatie
-            existing_dict = {
-                "Bedrijfnaam": "Compananny",
-                "Vestiging": "Amsterdam",
-                "Rapportdatum": "14-10-2024",
-            }
-            
-            # Probeer de response om te zetten naar een dictionary en voeg toe aan existing_dict
-            try:
-                new_dict = ast.literal_eval(response)
-                if isinstance(new_dict, dict):
-                    existing_dict.update(new_dict)
-                else:
-                    st.error("De response is geen geldige dictionary.")
-            except (ValueError, SyntaxError) as e:
-                st.error(f"Fout bij het omzetten van de response naar een dictionary: {e}")
-                new_dict = None
-
-            if new_dict:
-                st.write("Geüpdatete dictionary:", existing_dict)
+            # Als gebruiker niet is ingelogd, toon inlogvelden
+            if not st.session_state.logged_in_dev:
+                # Vraag om inloggegevens
+                username = st.text_input("Gebruikersnaam", key="inloggen_dev")
+                password = st.text_input("Wachtwoord", type="password", key="inloggen_dev_password")
+                
+                if st.button("Inloggen"):
+                    if username == "h" and password == "f":
+                        st.session_state.logged_in_dev = True  # Zet de loginstatus op True
+                        st.success("Succesvol ingelogd!")
+                        st.rerun()
+                    else:
+                        st.warning("Ongeldige gebruikersnaam of wachtwoord.")
             else:
-                st.write("Kon de dictionary niet updaten met de response.")
-
-
-        # In tab5 maak je de annotatie tool voor de trainingsdata
-        with tab5:
-            st.write(train_data.head(100))
-
-            # Labels die per tekst worden beoordeeld
-            labels = [
-                "Algemene voorwaarden kwaliteit en naleving",
-                "Veiligheid en gezondheid",
-                "Personeel en groepen",
-                "Pedagogisch klimaat",
-                "Accommodatie",
-                "Ouderrecht"
-            ]
+                # Input voor nieuw bedrijf en vestiging (alleen zichtbaar als gebruiker is ingelogd)
+                new_bedrijf = st.text_input("Bedrijfsnaam")
+                new_vestiging = st.text_input("Vestiging")
             
-            st.header("Training Data Annotator")
-            
-            # Upload PDF voor analyse
-            uploaded_file = st.file_uploader("Upload een PDF van het inspectierapport", type="pdf", key="training_data_uploader")
-
-            if uploaded_file:
-                # Extract text from PDF
-                reader = PdfReader(uploaded_file)
-                
-                # pdf_text = "\n".join([page.extract_text() for page in reader.pages])
-                # Gebruik alleen pagina's 3 en 4 (index 2 en 3)
-                
-                pdf_text = "\n".join([reader.pages[i].extract_text() for i in [2, 3, -1]])
-
-
-                # Verwijder lege regels
-                pdf_text = "\n".join([line for line in pdf_text.splitlines() if line.strip() != ""])
-
-                # Verwerk PDF tekst met test_algoritme om een lijst met teksten te krijgen
-                text_list = text_algoritme(pdf_text)
-                st.write("De tekst is opgesplitst voor annotatie.")
-
-                # Annotatie per tekst
-                for i, text in enumerate(text_list):
-                    # Controleer of de tekst al bestaat in train_data
-                    if is_unique_text(text, train_data, drempel=0.8):
-                        st.subheader(f"Tekst {i+1}")
-                        st.write(text)
-
-                        # Checkboxen voor labels
-                        label_dict = {}
-                        for label in labels:
-                            label_dict[label] = st.checkbox(label, key=f"{label}_{i}")
-
-                        # Voeg de annotatie toe aan de lijst van geannoteerde data
-                        if st.button("Opslaan annotatie", key=f"save_{i}"):
-                            annotation = {
-                                "text": text,
-                                **{label: int(label_dict[label]) for label in labels}  # Converteer checkboxes naar 1/0
-                            }
-                            save_annotation_to_excel(annotation, path="train_data.xlsx")
-                            st.success("Annotatie opgeslagen!")
-                            st.json(annotation)
-                            # st.experimental_rerun()  # Vernieuw de app om de volgende tekst te tonen
-
-
-
+                # Toevoeg Button
+                if st.button("Toevoegen"):
+                    voeg_vestiging_toe(new_bedrijf, new_vestiging, path="bedrijven_data.json")
+                    st.write(f"Bedrijf '{new_bedrijf}' met vestiging '{new_vestiging}' toegevoegd aan de database.")
 
     if __name__ == "__main__":
         main()
