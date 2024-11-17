@@ -43,6 +43,16 @@ else:
             # Zet de datum in "Rapportdatum" om naar het formaat YYYY-MM-DD
             data["Rapportdatum"] = data["Rapportdatum"].dt.strftime("%Y-%m-%d")
             return data
+        
+        # Functie om een back-up te maken van de database
+        def maak_backup(data, backup_path="backups/CompaNanny_Database_backup.csv"):
+            # Controleer of de back-up map bestaat, zo niet, maak deze aan
+            os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+            # Sla de data op als CSV
+            backup_file = backup_path.replace(".csv", f"_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+            data.to_csv(backup_file, index=False)
+            st.success(f"Back-up gemaakt: {backup_file}")
+
 
         # Functie om gegevens op te slaan in het JSON-bestand
         def save_to_json(data, path="bedrijven_data.json"):
@@ -145,9 +155,6 @@ else:
 
 
 
-
-
-
     #=======================================================================================
         # Creëer meerdere tabbladen
         tab1, tab2, tab3 = st.tabs(["Inspectierapport Analyser", "Overzicht Database", "Developer"])
@@ -160,6 +167,8 @@ else:
             uploaded_file = st.file_uploader("Upload een PDF van het inspectierapport", type="pdf")
             
             if uploaded_file:
+                # st.session_state['bedrijf'], st.session_state['vestiging'], st.session_state['inspection_date'] = None, None, None
+
                 # Lees de voorpagina van de PDF
                 reader = PdfReader(uploaded_file)
                 front_page = "".join(reader.pages[0].extract_text())
@@ -204,7 +213,6 @@ else:
                             st.warning("Deze combinatie van Bedrijf, Vestiging en Rapportdatum bestaat al in de database.")
                         else:
                             response = chat_with_gpt(pdf_text, inspection_date)
-                            st.write(response)
 
                             # Probeer de response om te zetten naar een dictionary en voeg toe aan new_row
                             try:
@@ -218,9 +226,9 @@ else:
                                 new_dict = None
 
                             if new_dict:
-                                st.write("Geüpdatete dictionary:", new_row)
+                                st.write("Model uitkomst:", new_row)
                             else:
-                                st.write("Kon de dictionary niet updaten met de response.")
+                                st.write("Kon de dictionary niet updaten met de response. Neem contact op met Hidde")
 
 
     #====================================================================================================
@@ -229,13 +237,14 @@ else:
                             new_row_df = pd.DataFrame([new_row])
                             data = pd.concat([data, new_row_df], ignore_index=True)
 
-                            # st.write(f"Analyse uitgevoerd voor {bedrijf}, {vestiging}.")
-                            st.write(data.tail(1))
 
                             # if st.button("Toevoegen aan database"):
                             # # Sla de bijgewerkte DataFrame op in het Excel-bestand
                             data.to_excel("CompaNanny_Database.xlsx", index=False)
-            st.session_state['inspection_date'] = None
+
+                                        # Controleer of er een back-up nodig is
+                            if len(data) % 20 == 0:
+                                maak_backup(data)
             
 
 #====================================================================================================
@@ -275,6 +284,7 @@ else:
                     else:
                         st.warning("Ongeldige gebruikersnaam of wachtwoord.")
             else:
+                st.subheader("Bedrijf/Vestiging Toevoegen aan de database")
                 # Input voor nieuw bedrijf en vestiging (alleen zichtbaar als gebruiker is ingelogd)
                 new_bedrijf = st.text_input("Bedrijfsnaam")
                 new_vestiging = st.text_input("Vestiging")
@@ -283,6 +293,33 @@ else:
                 if st.button("Toevoegen"):
                     voeg_vestiging_toe(new_bedrijf, new_vestiging, path="bedrijven_data.json")
                     st.write(f"Bedrijf '{new_bedrijf}' met vestiging '{new_vestiging}' toegevoegd aan de database.")
+
+                # Horizontale lijn voor scheiding
+                st.markdown("---")
+                
+                # Sectie: Basisdata vervangen via Excel/CSV
+                st.subheader("Database Vervangen")
+                uploaded_file = st.file_uploader("Upload een Excel- of CSV-bestand", type=["xlsx", "csv"])
+                
+                if uploaded_file:
+                    try:
+                        # Laad de data afhankelijk van bestandstype
+                        if uploaded_file.name.endswith(".xlsx"):
+                            new_data = pd.read_excel(uploaded_file, engine="openpyxl")
+                        elif uploaded_file.name.endswith(".csv"):
+                            new_data = pd.read_csv(uploaded_file)
+                        
+                        # Toon de geüploade data in een tabel
+                        st.write("Geüploade data:")
+                        st.dataframe(new_data)
+                        
+                        # Vervang basisdata met een bevestigingsknop
+                        if st.button("Vervang Basisdata"):
+                            new_data.to_excel("CompaNanny_Database.xlsx", index=False, engine="openpyxl")
+                            st.success("De basisdata is succesvol vervangen.")
+                    except Exception as e:
+                        st.error(f"Fout bij het verwerken van het bestand: {e}")
+
 
     if __name__ == "__main__":
         main()
