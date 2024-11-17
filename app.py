@@ -13,6 +13,10 @@ from Model import *
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+# Controleer of de loginstatus van de Developer in session state bestaat, anders stel deze in op False
+if "logged_in_dev" not in st.session_state:
+    st.session_state.logged_in_dev = False
+
 st.header("CompaNanny Analyser")
 
 # Als gebruiker niet is ingelogd, toon inlogvelden
