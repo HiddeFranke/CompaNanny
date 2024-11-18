@@ -1,6 +1,5 @@
 import streamlit as st
 import openai
-import streamlit as st
 
 openai.api_key = st.secrets["gpt_api_key"]
 # def chat_with_gpt(user_input, inspection_date):
