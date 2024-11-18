@@ -119,11 +119,6 @@ else:
 
             return bedrijf, vestiging
 
-
-
-
-
-        
         def find_or_input_inspection_date(pdf_text):                     
             # Zoek naar "Datum inspectie" en haal de datum op
             match = re.search(r"Datum inspectie[:\s]+(\d{2}-\d{2}-\d{4})", pdf_text)
@@ -144,6 +139,59 @@ else:
                 else:
                     inspection_date = None
             return inspection_date
+        
+
+        def update_row_with_response(new_row, response):
+            try:
+                new_dict = ast.literal_eval(response)
+                if isinstance(new_dict, dict):
+                    new_row.update(new_dict)
+                else:
+                    st.error("De response is geen geldige dictionary.")
+            except (ValueError, SyntaxError) as e:
+                st.error(f"Fout bij het omzetten van de response naar een dictionary: {e}")
+                new_dict = None
+            return new_row
+        
+        def calculate_text_cost_with_base(pdf_text, base_tokens=150, cost_per_1k_input=0.005, cost_per_1k_output=0.015):
+            """
+            Calculate the total cost of processing a given text with a fixed base token count for standard info.
+
+            Parameters:
+            - pdf_text (str): The input text from the PDF.
+            - base_tokens (int): Fixed token count for the standard_info part (default is 200 tokens).
+            - cost_per_1k_input (float): Cost per 1,000 input tokens (default is $0.005).
+            - cost_per_1k_output (float): Cost per 1,000 output tokens (default is $0.015).
+
+            Returns:
+            - dict: A dictionary containing the word count, total token count, and calculated costs.
+            """
+            # Calculate the word count and corresponding tokens for pdf_text
+            word_count = len(pdf_text.split())
+            input_tokens_dynamic = int((word_count / 750) * 1000)  # Approx. 750 words = 1,000 tokens
+
+            # Total input tokens = base tokens + dynamic tokens
+            total_input_tokens = base_tokens + input_tokens_dynamic
+
+            # Fixed output tokens (based on the standard dictionary structure)
+            output_tokens = 50  # Example size of a standard dictionary output
+
+            # Calculate input and output costs
+            input_cost = round((total_input_tokens / 1000) * cost_per_1k_input, 4)
+            output_cost = round((output_tokens / 1000) * cost_per_1k_output, 4)
+
+            # Total cost
+            total_cost = round(input_cost + output_cost, 4)
+
+            return {
+                "word_count": word_count,
+                "input_tokens": total_input_tokens,
+                "output_tokens": output_tokens,
+                "input_cost": input_cost,
+                "output_cost": output_cost,
+                "total_cost": total_cost
+            }
+
 
         # Data inladen bij opstart
         # Laad de bestaande gegevens als ze al bestaan
@@ -152,6 +200,9 @@ else:
         data = load_data()
         train_data = pd.read_excel("train_data.xlsx")
         response = None
+
+
+
 
 
 
@@ -172,10 +223,10 @@ else:
                 # Lees de voorpagina van de PDF
                 reader = PdfReader(uploaded_file)
                 front_page = "".join(reader.pages[0].extract_text())
-                pdf_pages = [2,3,4,5,-1]
+                pdf_pages = [2,3]
                 pdf_text = "\n".join([reader.pages[i].extract_text() for i in pdf_pages])
                 # Verwijder lege regels
-                pdf_text = "\n".join([line for line in pdf_text.splitlines() if line.strip() != ""])
+                # pdf_text = "\n".join([line for line in pdf_text.splitlines() if line.strip() != ""])
 
                 # Zoek naar bestaand bedrijf en vestiging op voorpagina
                 bedrijf, vestiging = vind_bedrijf_vestiging(front_page)
@@ -189,9 +240,9 @@ else:
 
                 if bedrijf and vestiging and inspection_date:
                     # Display extracted text
-                    st.text_area("Extracted Text", pdf_text, height=200)
+                    st.text_area("Geëxtraheerde tekst", pdf_text, height=200)
                     # st.write("Totaal aantal woorden pdf: ", len(pdf_text.split()))
-                    st.write ("Verwachte prijs voor analyse: ", round(len(pdf_text.split())*0.75*0.005/1000,4), "$")
+                    st.write("Verwachte prijs voor analyse: ", calculate_text_cost_with_base(pdf_text, base_tokens=200, cost_per_1k_input=0.005, cost_per_1k_output=0.015)["total_cost"], "$")
                     
                     # Placeholder voor modelanalyse
                     if st.button("Analyseer"):
@@ -209,27 +260,18 @@ else:
                             (data["Rapportdatum"] == new_row["Rapportdatum"])
                         ].shape[0] > 0
 
+
+                        #WEGHALEN
+                        is_duplicate = False
+
                         if is_duplicate:
                             st.warning("Deze combinatie van Bedrijf, Vestiging en Rapportdatum bestaat al in de database.")
                         else:
+                            # st.markdown("---")
                             response = chat_with_gpt(pdf_text, inspection_date)
-
                             # Probeer de response om te zetten naar een dictionary en voeg toe aan new_row
-                            try:
-                                new_dict = ast.literal_eval(response)
-                                if isinstance(new_dict, dict):
-                                    new_row.update(new_dict)
-                                else:
-                                    st.error("De response is geen geldige dictionary.")
-                            except (ValueError, SyntaxError) as e:
-                                st.error(f"Fout bij het omzetten van de response naar een dictionary: {e}")
-                                new_dict = None
-
-                            if new_dict:
-                                st.write("Model uitkomst:", new_row)
-                            else:
-                                st.write("Kon de dictionary niet updaten met de response. Neem contact op met Hidde")
-
+                            new_row = update_row_with_response(new_row, response)
+                            st.write("Model met alle pdf_text: ", new_row)
 
     #====================================================================================================
                             # Hier kan het model worden aangeroepen en de analyse in de database worden opgeslagen
@@ -242,7 +284,7 @@ else:
                             # # Sla de bijgewerkte DataFrame op in het Excel-bestand
                             data.to_excel("CompaNanny_Database.xlsx", index=False)
 
-                                        # Controleer of er een back-up nodig is
+                            # Controleer of er een back-up nodig is
                             if len(data) % 20 == 0:
                                 maak_backup(data)
             
