@@ -56,15 +56,15 @@ def chat_with_gpt(user_input, inspection_date, debug=False):
 
     4. **Extra informatie:
         -{extra_info}
-    Voorbeeld van correcte uitvoer:   
-    dict(
+    Voorbeeld van correcte uitvoer (zonder python-codeblok):   
+    {{
         'Algemene voorwaarden kwaliteit en naleving': 0,
         'Veiligheid en gezondheid': 1,
         'Personeel en groepen': 0,
         'Pedagogisch klimaat': 0,
         'Accommodatie': 0,
         'Ouderrecht': 0
-    )
+    }}
     
     Hier heb je de pdf-informatie:
     """
