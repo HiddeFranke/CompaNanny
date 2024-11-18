@@ -262,7 +262,7 @@ else:
 
 
                         #WEGHALEN
-                        is_duplicate = False
+                        # is_duplicate = False
 
                         if is_duplicate:
                             st.warning("Deze combinatie van Bedrijf, Vestiging en Rapportdatum bestaat al in de database.")
