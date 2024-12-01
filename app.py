@@ -120,6 +120,7 @@ else:
             - **Locatie-informatie**:
                 - De naam van de kinderopvangorganisatie.
                 - De specifieke vestiging waar de inspectie is uitgevoerd.
+                - Het type opvangvoorziening op de locatie (keuze uit: "VGO", "BSO", "KDV", "GOB").
             - **Inspectiedatum**:
                 - De datum waarop de inspectie heeft plaatsgevonden.
             - **Overtredingen per categorie**:
