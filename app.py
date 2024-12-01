@@ -2,7 +2,6 @@ import streamlit as st
 from PyPDF2 import PdfReader
 import pandas as pd
 from datetime import datetime
-import creds
 from Model import *
 from utils import *
 
