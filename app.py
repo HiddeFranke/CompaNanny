@@ -90,25 +90,10 @@ else:
                         ].shape[0] > 0
 
 
-                        #WEGHALEN
-                        is_duplicate = False
-
                         if is_duplicate:
                             st.warning("Deze combinatie van Bedrijf, Vestiging en Rapportdatum bestaat al in de database.")
                         else:
-                            # # Verwerk PDF tekst met text_algoritme om unieke teksten te krijgen
-                            # algoritme_text_list = text_algoritme(pdf_text)
-                            # st.write("De tekst is opgesplitst voor annotatie.", algoritme_text_list)
-
-                            # # Probeer de response om te zetten naar een dictionary en voeg toe aan new_row
-                            # st.markdown("---")
-                            # response_algortime_full = update_row_with_response(new_row, chat_with_gpt(algoritme_text_list, inspection_date))
-                            # st.write("Verwachte prijs voor analyse (response_algortime_full): ", calculate_text_cost_with_base("\n".join(algoritme_text_list), base_tokens=200, cost_per_1k_input=0.005, cost_per_1k_output=0.015)["total_cost"], "$")
-                            # st.write("response_algortime_full (lijst met alle overtredingsberichten): ", response_algortime_full)
-
-                            # st.markdown("---")
                             response = chat_with_gpt(pdf_text, inspection_date)
-
 
                             # Probeer de response om te zetten naar een dictionary en voeg toe aan new_row
                             new_row = update_row_with_response(new_row, response)
