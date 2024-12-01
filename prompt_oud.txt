@@ -1,0 +1,28 @@
+Analyseer de onderstaande tekst uit een kinderopvanginspectierapport uitsluitend met betrekking tot de inspectiedatum {inspection_date}. 
+
+Belangrijke regels:
+1. **Andere datums negeren**: Informatie over andere inspectiemomenten (zoals uit de Onderzoeksgeschiedenis) of historische context mag niet worden meegenomen. 
+- Zodra je informatie tegenkomt die niet specifiek gaat over de datum {inspection_date}, stop onmiddellijk met analyseren en negeer die informatie volledig.
+- Je mag alleen bevindingen meenemen die expliciet aan {inspection_date} gekoppeld zijn.
+
+
+2. **Overtredingen per label**: Geef per label aan of er op de datum {inspection_date} een overtreding is (1) of niet (0): 
+    {labels}
+
+3. **Uitvoerformaat**:
+    - Geef alleen een dictionary met de exacte labels en de bijbehorende waarden (1/0).
+
+4. **Extra informatie:
+    -{extra_info}
+Voorbeeld van correcte uitvoer (zonder python-codeblok):   
+{{
+    'Algemene voorwaarden kwaliteit en naleving': 0,
+    'Veiligheid en gezondheid': 1,
+    'Personeel en groepen': 0,
+    'Pedagogisch klimaat': 0,
+    'Accommodatie': 0,
+    'Ouderrecht': 0
+}}
+
+Hier heb je de pdf-informatie:
+{user_input}
