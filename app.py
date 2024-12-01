@@ -364,6 +364,8 @@ else:
 
             ### Developer Pagina
             De developer pagina is bedoeld voor geautoriseerde gebruikers om:
+            - Bedrijven en vestigingen toe te voegen aan de beschikbare opties.
+            - Originele database vervangen.
             - De prompt voor het model aan te passen, inclusief de categorieën en instructies.
             - De input- en outputparameters te beheren om kosten te optimaliseren.
 
@@ -415,6 +417,7 @@ else:
             De app maakt gebruik van slimme algoritmen om automatisch:
             - Bedrijfsnamen
             - Vestigingen
+            - Type opvangvoorziening
             - Inspectiedata
 
             te detecteren uit de tekst in een PDF. Wanneer deze niet automatisch worden gevonden, biedt de app opties om deze handmatig in te vullen via dropdowns en tekstvelden.
