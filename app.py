@@ -302,7 +302,7 @@ else:
             - **Inspectiedatum**:
                 - De datum waarop de inspectie heeft plaatsgevonden.
             - **Overtredingen per categorie**:
-                - Voor elk inspectierapport wordt aangegeven of er overtredingen zijn binnen de categorieën in de kolomnamen:
+                - Voor elk inspectierapport wordt aangegeven of er overtredingen zijn binnen de categorie van de kolomnaam.
             
             #### Hoe werkt de dataset?
             De dataset geeft per inspectierapport een binaire waarde aan:
