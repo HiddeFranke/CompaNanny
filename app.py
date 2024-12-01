@@ -446,16 +446,16 @@ else:
             ## 5. Veelgestelde Vragen
 
             1. **Kan ik de app gebruiken zonder technische kennis?**
-            - Nee, deze app is ontworpen voor technisch onderlegde gebruikers. 
+                - Nee, deze app is ontworpen voor technisch onderlegde gebruikers. 
 
             2. **Wat gebeurt er als mijn inspectierapport niet volledig wordt gedetecteerd?**
-            - De app biedt opties om ontbrekende gegevens handmatig in te voeren.
+                - De app biedt opties om ontbrekende gegevens handmatig in te voeren.
 
             3. **Hoe beheer ik de kosten van de API?**
-            - We raden aan om geen automatische incasso te gebruiken en losse bedragen toe te voegen via [OpenAI Billing](https://platform.openai.com/).
+                - We raden aan om geen automatische incasso te gebruiken en losse bedragen toe te voegen via [OpenAI Billing](https://platform.openai.com/).
 
             4. **Kan ik de database delen met anderen?**
-            - Ja, de database kan worden gedownload en extern worden gedeeld of geanalyseerd.
+                - Ja, de database kan worden gedownload en extern worden gedeeld of geanalyseerd.
 
             ---
 
