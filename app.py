@@ -294,6 +294,24 @@ else:
 
         # Tabblad 2: Overzicht Database
         with tab2:
+            st.markdown("""
+            #### Wat bevat de dataset?
+            - **Locatie-informatie**:
+                - De naam van de kinderopvangorganisatie.
+                - De specifieke vestiging waar de inspectie is uitgevoerd.
+            - **Inspectiedatum**:
+                - De datum waarop de inspectie heeft plaatsgevonden.
+            - **Overtredingen per categorie**:
+                - Voor elk inspectierapport wordt aangegeven of er overtredingen zijn binnen de categorieën in de kolomnamen:
+            
+            #### Hoe werkt de dataset?
+            De dataset geeft per inspectierapport een binaire waarde aan:
+            - **1**: Er is een overtreding vastgesteld binnen deze categorie.
+            - **0**: Er is geen overtreding vastgesteld binnen deze categorie.
+            """)
+            
+            # Horizontale lijn voor scheiding
+            st.markdown("---")
             st.header("Overzicht Database")
             st.write(data.head(100))
 
