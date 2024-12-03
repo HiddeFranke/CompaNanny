@@ -45,6 +45,11 @@ else:
             
             if st.button("Push to github"):
                 import subprocess
+
+                token = st.secrets["GITHUB_PAT"]
+                repo_url = f"https://{token}@github.com/HiddeFranke/CompaNanny.git"
+                st.write(subprocess.run(["git", "push", repo_url], check=True))
+                
                 def check_git_repository():
                     try:
                         result = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], capture_output=True, text=True, check=True)
