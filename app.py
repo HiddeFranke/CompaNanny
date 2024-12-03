@@ -32,6 +32,7 @@ if not st.session_state.logged_in:
 else:
     def main():
         # Data laden
+        configure_git_user()
         data = load_file("CompaNanny_Database.xlsx", parse_dates=["Rapportdatum"])
         response = None
 
