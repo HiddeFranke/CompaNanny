@@ -44,6 +44,17 @@ else:
             st.header("Inspectierapport Analyser")
             
             if st.button("Push to github"):
+                import subprocess
+                def check_git_repository():
+                    try:
+                        result = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], capture_output=True, text=True, check=True)
+                        return result.stdout.strip()
+                    except subprocess.CalledProcessError:
+                        return "Niet in een Git-repository."
+                
+                repository_status = check_git_repository()
+                st.write(f"Git-repository status: {repository_status}")
+                
                 # Voeg een lege regel met alleen nullen toe
                 empty_row = pd.DataFrame([[0] * len(data.columns)], columns=data.columns)
                 data = pd.concat([data, empty_row], ignore_index=True)
