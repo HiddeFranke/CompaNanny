@@ -45,26 +45,14 @@ else:
             
             if st.button("Push to github"):
                 import subprocess
-
-                token = st.secrets["GITHUB_PAT"]
-                repo_url = f"https://{token}@github.com/HiddeFranke/CompaNanny.git"
-                st.write(subprocess.run(["git", "push", repo_url], check=True))
-                
-                def check_git_repository():
-                    try:
-                        result = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], capture_output=True, text=True, check=True)
-                        return result.stdout.strip()
-                    except subprocess.CalledProcessError:
-                        return "Niet in een Git-repository."
-                
-                repository_status = check_git_repository()
-                st.write(f"Git-repository status: {repository_status}")
                 
                 # Voeg een lege regel met alleen nullen toe
                 empty_row = pd.DataFrame([[0] * len(data.columns)], columns=data.columns)
                 data = pd.concat([data, empty_row], ignore_index=True)
-                push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
-            
+                st.write(data.tail(5))
+                # push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
+                save_and_push_to_github(data=data, file_name="CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd via Streamlit")
+                
             # Upload PDF voor analyse
             uploaded_file = st.file_uploader("Upload een PDF van het inspectierapport", type="pdf")
             
