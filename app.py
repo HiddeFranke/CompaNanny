@@ -43,6 +43,9 @@ else:
         with tab_model:
             st.header("Inspectierapport Analyser")
             
+            if st.button("Push to github"):
+                push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
+            
             # Upload PDF voor analyse
             uploaded_file = st.file_uploader("Upload een PDF van het inspectierapport", type="pdf")
             
