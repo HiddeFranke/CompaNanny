@@ -115,7 +115,7 @@ else:
                             # # Sla de bijgewerkte DataFrame op in het Excel-bestand
                             # data.to_excel("CompaNanny_Database.xlsx", index=False)
                             # push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
-                            save_and_push_to_github(data=data, file_name="CompaNanny_Database.xlsx", commit_message=f"Nieuwe data toegevoegd via Streamlit op {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")
+                            save_and_push_to_github(data=data, file_name="CompaNanny_Database.xlsx", commit_message=f'Nieuwe data toegevoegd via Streamlit op {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                             
                             # Controleer of er een back-up nodig is
                             if len(data) % 20 == 0:
