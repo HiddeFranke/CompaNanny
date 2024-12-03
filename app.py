@@ -44,6 +44,9 @@ else:
             st.header("Inspectierapport Analyser")
             
             if st.button("Push to github"):
+                # Voeg een lege regel met alleen nullen toe
+                empty_row = pd.DataFrame([[0] * len(data.columns)], columns=data.columns)
+                data = pd.concat([data, empty_row], ignore_index=True)
                 push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
             
             # Upload PDF voor analyse
