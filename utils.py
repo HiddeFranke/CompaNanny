@@ -319,6 +319,17 @@ def calculate_text_cost_with_base(pdf_text, base_tokens=150, cost_per_1k_input=0
     }
 
 #==========
+def configure_git_user():
+    """
+    Stel dynamisch de Git-gebruiker en e-mail in voor de huidige sessie.
+    """
+    try:
+        subprocess.run(["git", "config", "--global", "user.name", "Hidde Franke"], check=True)
+        subprocess.run(["git", "config", "--global", "user.email", "hiddefranke@gmail.com"], check=True)
+        st.success("Git-gebruiker geconfigureerd.")
+    except subprocess.CalledProcessError as e:
+        st.error(f"Fout bij het configureren van Git-gebruiker: {e}")
+
 def save_and_push_to_github(data, file_name, commit_message="Update dataset"):
     """
     Sla data op in een Excel-bestand en push wijzigingen naar GitHub.
