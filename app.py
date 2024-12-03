@@ -102,7 +102,9 @@ else:
                             data = pd.concat([data, new_row_df], ignore_index=False)
 
                             # # Sla de bijgewerkte DataFrame op in het Excel-bestand
+                            # data.to_excel("CompaNanny_Database.xlsx", index=False)
                             data.to_excel("CompaNanny_Database.xlsx", index=False)
+                            push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
 
                             # Controleer of er een back-up nodig is
                             if len(data) % 20 == 0:
