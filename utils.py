@@ -319,33 +319,35 @@ def calculate_text_cost_with_base(pdf_text, base_tokens=150, cost_per_1k_input=0
     }
 
 #==========
-def push_to_github(file_path, commit_message="Update dataset"):
+def save_and_push_to_github(data, file_name, commit_message="Update dataset"):
     """
-    Push een bestand naar GitHub vanuit Streamlit.
+    Sla data op in een Excel-bestand en push wijzigingen naar GitHub.
+
     Parameters:
-    - file_path: Pad naar het bestand dat je wilt pushen.
-    - commit_message: De commitboodschap.
+    - data: De Pandas DataFrame die moet worden opgeslagen.
+    - file_name: De naam van het bestand waarin de data wordt opgeslagen.
+    - commit_message: De commitboodschap voor GitHub.
     """
+    # Stap 1: Sla het bestand op
+    data.to_excel(file_name, index=False)
+    st.write(f"Data opgeslagen in bestand: {file_name}")
+
+    # Stap 2: Push het bestand naar GitHub
     try:
-        # Check of er wijzigingen zijn
-        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-        if not status.stdout.strip():
-            st.warning("Geen wijzigingen om te committen.")
-            return
+        # Haal het token op uit de Streamlit-secrets
+        token = st.secrets["GITHUB_PAT"]
+        repo_url = f"https://{token}@github.com/HiddeFranke/CompaNanny.git"
 
         # Voeg het bestand toe aan Git
-        subprocess.run(["git", "add", file_path], check=True)
+        subprocess.run(["git", "add", file_name], check=True)
 
-        # Maak een commit
-        commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
-        st.write(f"Commit uitgevoerd: {commit.stdout}")
+        # Commit de wijziging
+        subprocess.run(["git", "commit", "-m", commit_message], check=True)
 
-        # Push de wijzigingen
-        push = subprocess.run(["git", "push"], capture_output=True, text=True)
-        st.write(f"Push uitgevoerd: {push.stdout}")
+        # Push de wijzigingen naar GitHub
+        subprocess.run(["git", "push", repo_url], check=True)
+
         st.success("Bestand succesvol naar GitHub gepusht.")
-
     except subprocess.CalledProcessError as e:
         st.error(f"Fout bij het uitvoeren van een Git-commando: {e}")
         st.error(f"STDERR: {e.stderr}")
-
