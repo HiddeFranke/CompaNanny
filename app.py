@@ -109,6 +109,8 @@ else:
                             # Controleer of er een back-up nodig is
                             if len(data) % 20 == 0:
                                 make_backup(data)
+                                # data_backup = make_backup(data, backup_dir="backups", filename_prefix="CompaNanny_Database_backup")
+                                
 
                             st.success("Output toegevoegd aan database.")
 
