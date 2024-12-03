@@ -321,18 +321,31 @@ def calculate_text_cost_with_base(pdf_text, base_tokens=150, cost_per_1k_input=0
 #==========
 def push_to_github(file_path, commit_message="Update dataset"):
     """
-    Push het bestand naar GitHub.
+    Push een bestand naar GitHub vanuit Streamlit.
     Parameters:
-    - file_path: Het pad naar het bestand dat je wilt pushen.
-    - commit_message: De commitboodschap voor de wijziging.
+    - file_path: Pad naar het bestand dat je wilt pushen.
+    - commit_message: De commitboodschap.
     """
     try:
-        # Voeg het bestand toe aan de staging area
+        # Check of er wijzigingen zijn
+        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
+        if not status.stdout.strip():
+            st.warning("Geen wijzigingen om te committen.")
+            return
+
+        # Voeg het bestand toe aan Git
         subprocess.run(["git", "add", file_path], check=True)
-        # Commit de wijziging
-        subprocess.run(["git", "commit", "-m", commit_message], check=True)
-        # Push naar de remote repository
-        subprocess.run(["git", "push"], check=True)
-        st.success(f"Bestand succesvol naar GitHub gepusht: {file_path}")
+
+        # Maak een commit
+        commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
+        st.write(f"Commit uitgevoerd: {commit.stdout}")
+
+        # Push de wijzigingen
+        push = subprocess.run(["git", "push"], capture_output=True, text=True)
+        st.write(f"Push uitgevoerd: {push.stdout}")
+        st.success("Bestand succesvol naar GitHub gepusht.")
+
     except subprocess.CalledProcessError as e:
-        st.error(f"Fout bij het pushen naar GitHub: {e}")
+        st.error(f"Fout bij het uitvoeren van een Git-commando: {e}")
+        st.error(f"STDERR: {e.stderr}")
+
