@@ -44,15 +44,15 @@ else:
         with tab_model:
             st.header("Inspectierapport Analyser")
             
-            if st.button("Push to github"):
-                import subprocess
+            # if st.button("Push to github"):
+            #     import subprocess
                 
-                # Voeg een lege regel met alleen nullen toe
-                empty_row = pd.DataFrame([[0] * len(data.columns)], columns=data.columns)
-                data = pd.concat([data, empty_row], ignore_index=True)
-                st.write(data.tail(5))
-                # push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
-                save_and_push_to_github(data=data, file_name="CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd via Streamlit")
+            #     # Voeg een lege regel met alleen nullen toe
+            #     empty_row = pd.DataFrame([[0] * len(data.columns)], columns=data.columns)
+            #     data = pd.concat([data, empty_row], ignore_index=True)
+            #     st.write(data.tail(5))
+            #     # push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
+            #     save_and_push_to_github(data=data, file_name="CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd via Streamlit")
                 
             # Upload PDF voor analyse
             uploaded_file = st.file_uploader("Upload een PDF van het inspectierapport", type="pdf")
@@ -114,9 +114,9 @@ else:
 
                             # # Sla de bijgewerkte DataFrame op in het Excel-bestand
                             # data.to_excel("CompaNanny_Database.xlsx", index=False)
-                            data.to_excel("CompaNanny_Database.xlsx", index=False)
-                            push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
-
+                            # push_to_github("CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd na analyse")
+                            save_and_push_to_github(data=data, file_name="CompaNanny_Database.xlsx", commit_message="Nieuwe data toegevoegd via Streamlit")
+                            
                             # Controleer of er een back-up nodig is
                             if len(data) % 20 == 0:
                                 make_backup(data)
