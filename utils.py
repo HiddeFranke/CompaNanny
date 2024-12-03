@@ -10,6 +10,7 @@ from datetime import datetime
 import re
 import ast
 import streamlit as st
+import subprocess
 
 def load_file(file_path, parse_dates=None):
     """
@@ -316,3 +317,22 @@ def calculate_text_cost_with_base(pdf_text, base_tokens=150, cost_per_1k_input=0
         "output_cost": output_cost,
         "total_cost": total_cost
     }
+
+#==========
+def push_to_github(file_path, commit_message="Update dataset"):
+    """
+    Push het bestand naar GitHub.
+    Parameters:
+    - file_path: Het pad naar het bestand dat je wilt pushen.
+    - commit_message: De commitboodschap voor de wijziging.
+    """
+    try:
+        # Voeg het bestand toe aan de staging area
+        subprocess.run(["git", "add", file_path], check=True)
+        # Commit de wijziging
+        subprocess.run(["git", "commit", "-m", commit_message], check=True)
+        # Push naar de remote repository
+        subprocess.run(["git", "push"], check=True)
+        st.success(f"Bestand succesvol naar GitHub gepusht: {file_path}")
+    except subprocess.CalledProcessError as e:
+        st.error(f"Fout bij het pushen naar GitHub: {e}")
