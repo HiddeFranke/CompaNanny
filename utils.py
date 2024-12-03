@@ -326,7 +326,7 @@ def configure_git_user():
     try:
         subprocess.run(["git", "config", "--global", "user.name", "Hidde Franke"], check=True)
         subprocess.run(["git", "config", "--global", "user.email", "hiddefranke@gmail.com"], check=True)
-        st.success("Git-gebruiker geconfigureerd.")
+        # st.success("Git-gebruiker geconfigureerd.")
     except subprocess.CalledProcessError as e:
         st.error(f"Fout bij het configureren van Git-gebruiker: {e}")
 
@@ -341,7 +341,7 @@ def save_and_push_to_github(data, file_name, commit_message="Update dataset"):
     """
     # Stap 1: Sla het bestand op
     data.to_excel(file_name, index=False)
-    st.write(f"Data opgeslagen in bestand: {file_name}")
+    # st.write(f"Data opgeslagen in bestand: {file_name}")
 
     # Stap 2: Push het bestand naar GitHub
     try:
@@ -358,7 +358,7 @@ def save_and_push_to_github(data, file_name, commit_message="Update dataset"):
         # Push de wijzigingen naar GitHub
         subprocess.run(["git", "push", repo_url], check=True)
 
-        st.success("Bestand succesvol naar GitHub gepusht.")
+        # st.success("Bestand succesvol naar GitHub gepusht.")
     except subprocess.CalledProcessError as e:
         st.error(f"Fout bij het uitvoeren van een Git-commando: {e}")
         st.error(f"STDERR: {e.stderr}")
